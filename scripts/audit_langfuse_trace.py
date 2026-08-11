@@ -20,6 +20,15 @@ def _type_name(observation: object) -> str:
     return str(getattr(observation, "type", "unknown")).split(".")[-1].upper()
 
 
+def _duration_ms(observation: object) -> str:
+    """Format observation duration without displaying any user-controlled payload."""
+    start = getattr(observation, "start_time", None)
+    end = getattr(observation, "end_time", None)
+    if start is None or end is None:
+        return "unknown"
+    return f"{(end - start).total_seconds() * 1000:.1f}ms"
+
+
 def main() -> int:
     configure_utf8_stdio()
     load_dotenv(REPO_ROOT / ".env")
@@ -84,7 +93,10 @@ def main() -> int:
     for item in sorted(observations, key=lambda value: value.start_time):
         parent = item.parent_observation_id or "root"
         parent_name = getattr(by_id.get(item.parent_observation_id), "name", parent)
-        print(f"- {_type_name(item)} {item.name} | parent={parent_name}")
+        print(
+            f"- {_type_name(item)} {item.name} | "
+            f"duration={_duration_ms(item)} | parent={parent_name}"
+        )
     print(f"PII leaks: {pii_types or 'none'}")
     print(f"Redaction marker present: {'[REDACTED_' in serialized}")
     print(f"Generation model present: {generation_has_model}")
