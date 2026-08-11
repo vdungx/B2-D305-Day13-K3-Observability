@@ -1,0 +1,18 @@
+CP2 Langfuse trace list export — 2026-08-11
+Source: Langfuse API trace.list; payloads intentionally not exported.
+
+The following 10 chat-response traces were found with prompt_name=day13-chat,
+prompt_label=production, prompt_version=3 and prompt_source=langfuse:
+
+1. trace=20330fe031365635c8c8e71ad4f8d985 | session=s01 | correlation=req-e434eabe
+2. trace=6b3697c33abcc9c60235ffcfa3ead6ed | session=s02 | correlation=req-756ba13e
+3. trace=047bace2b083ab59488f31134d62a98 | session=s03 | correlation=req-3635fa50
+4. trace=07e98967a7c4d0049c9994ce7351617e | session=s04 | correlation=req-dd91bfda
+5. trace=b7f6359790311a60f950310b6de6d5c9 | session=s05 | correlation=req-16645a4c
+6. trace=37541d71d6062c14577a7130919b7c5f | session=s06 | correlation=req-4823696a
+7. trace=a8f0875fcbf6356dc02d56b8c6d1865b | session=s07 | correlation=req-cac606fb
+8. trace=32f1a8376e2e805804dda87461430da3 | session=s08 | correlation=req-e0b78d6f
+9. trace=2a4b2324a1db91b41b81dd997d29ea8a | session=s09 | correlation=req-6e6bbbdf
+10. trace=639f814724f6787f53f6be8412f603cf | session=s10 | correlation=req-0f159c24
+
+Count: 10 traces.

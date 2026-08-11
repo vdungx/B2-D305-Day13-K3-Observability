@@ -5,7 +5,12 @@
 - Tên nhóm: B2-D305-Day13-K3-Observability.
 - Repository URL: https://github.com/vdungx/B2-D305-Day13-K3-Observability
 - Commit SHA cuối: Cập nhật sau khi commit evidence/report cuối.
-- Vai trò: A — API & Middleware; B — Security/PII; C — Metrics & Dashboard; D — SRE & Alerts; E — QA, Chief Investigator & Langfuse.
+- Vai trò: 
+  - Trần Văn Dũng - 2A202601859 - A — API & Middleware
+  - Đàm Lê Minh Quân - 2A202601451 - B — Security/PII 
+  - Nguyễn Viết Huy - 2A202601081 - C — Metrics & Dashboard
+  - Lê Văn Đông - 2A202601851 - D — SRE & Alerts
+  - Đào Đức Mạnh - 2A202601833 - E — QA, Chief Investigator & Langfuse.
 
 ## 2. Kết quả tổng quan
 
@@ -33,7 +38,7 @@ Baseline CP0 có JSON logs nhưng không đủ context để nối các sự ki�
 
 ### Runtime metrics và dashboard
 
-Batch 10 request sạch sau CP1 cho P50 `151 ms`, P95 `541 ms`, error rate `0%`, tổng cost `$0.0241`, 330 input tokens, 1542 output tokens và quality `0.88`. Dashboard dùng nguồn chuẩn `data/logs.jsonl` và có sáu nhóm: latency, traffic, error, cost, tokens, quality. Contract validator xác nhận 6/6 panel; ảnh runtime hiện có tại `submission/evidence/dashboard_main.png`.
+Batch 10 request sạch sau CP1 cho P50 `151 ms`, P95 `541 ms`, error rate `0%`, tổng cost `$0.0241`, 330 input tokens, 1542 output tokens và quality `0.88`. Dashboard dùng nguồn chuẩn `data/logs.jsonl` và có sáu nhóm: latency, traffic, error, cost, tokens, quality. Contract validator xác nhận 6/6 panel; bộ screenshot runtime gồm `submission/evidence/dashboard_incident.png` (Latency/Traffic/Error) và `submission/evidence/dashboard_main.png` (Cost/Tokens/Quality), bao quát đủ sáu panel.
 
 SLO hiện tại: P95 latency ≤3000 ms, error rate ≤2%, daily cost ≤$2.50 và quality ≥0.75. Ba alert symptom-based (`high_latency_p95`, `elevated_error_rate`, `cost_budget_exceeded`) và runbook Metrics → Traces → Logs đã hoàn thiện tại `config/alert_rules.yaml` và `docs/alerts.md`.
 
@@ -46,9 +51,9 @@ Prompt managed `day13-chat` đã có:
 - v5, labels `baseline` và `production`; trace baseline `fa2e3ce889cf8e02fbf88b27e78f3c16` xác nhận label baseline/version 5.
 - v6, label `candidate`; trace candidate `abe4ad2a87575df9fb21c216019787ca` xác nhận label candidate/version 6.
 
-**Khoảng trống cần xử lý trên UI trước nộp:** chuyển label `production` sang candidate, rollback về baseline và lưu ảnh prompt list, hai waterfall cùng ảnh before/after label. Không ghi nhận là đã rollback khi chưa có UI evidence.
+Đã thực hiện chuyển label `production` sang candidate và rollback về baseline trên Langfuse UI. Ảnh trạng thái cuối xác nhận prompt `day13-chat`: v6 có `production`/`latest`/`baseline`, còn v5 có `candidate`.
 
-Evidence kỹ thuật: `rerun_cp2_traces.txt`, `dashboard_main.png`, `dashboard_validator.txt`.
+Evidence kỹ thuật: `rerun_cp2_traces.txt`, `dashboard_main.png`, `dashboard_incident.png`, `dashboard_validator.txt`, `langfuse_trace_list.png`, `langfuse_waterfall_cp2.png`, `langfuse_prompt.png`.
 
 ## 5. CP3 — Điều tra official challenge
 
@@ -64,7 +69,7 @@ Challenge K3 là `day13-k3-observability-v1`: incident `rag_slow`, ảnh hưởn
 - Fix: thêm timeout/latency budget, cache hoặc tối ưu retriever; xác minh lại P95 của refund sau fix.
 - Prevention: giữ alert P95 symptom-based và theo dõi duration `retrieve-context` trong Langfuse.
 
-Evidence: `rerun_cp3_investigation.txt`.
+Evidence: `rerun_cp3_investigation.txt`, `langfuse_waterfall_cp3.png`.
 
 ## 6. Đóng góp cá nhân
 
@@ -82,8 +87,8 @@ Evidence: `rerun_cp3_investigation.txt`.
 - [x] `validate_dashboard.py` hợp lệ 6/6.
 - [x] `pytest` pass 29 tests.
 - [x] Có correlation ID, PII redaction, trace audit và investigation CP3.
-- [ ] Chụp danh sách ≥10 traces và waterfall trên Langfuse UI.
-- [ ] Chụp prompt v5/v6 và thao tác production → candidate → baseline trên UI.
-- [ ] Bổ sung ảnh dashboard thấy đủ sáu panel nếu ảnh hiện tại chưa bao quát toàn bộ.
+- [x] Chụp danh sách ≥10 traces và waterfall trên Langfuse UI.
+- [x] Chụp prompt v5/v6 và thao tác production → candidate → baseline trên UI.
+- [x] Dựng dashboard runtime và lưu bộ screenshot đủ sáu panel.
 - [ ] Điền commit/PR của B–E và final SHA trước nộp.
 - [ ] Kiểm tra `git status --short` không có `.env`, cache, `.venv` hoặc PII raw.

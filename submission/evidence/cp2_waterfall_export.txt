@@ -1,0 +1,28 @@
+CP2 Langfuse waterfall export — 2026-08-11
+Source: Langfuse API observations.get_many; user input/output payloads not exported.
+
+Baseline prompt trace
+Trace: fa2e3ce889cf8e02fbf88b27e78f3c16
+Metadata: prompt_name=day13-chat, prompt_label=baseline, prompt_version=5,
+prompt_source=langfuse, correlation_id=req-9bc81e33
+- RETRIEVER retrieve-context | duration=1.0ms | parent=process-chat-request
+- SPAN process-chat-request | duration=459.0ms | parent=root
+- GENERATION generate-response | duration=151.0ms | parent=process-chat-request
+
+Candidate prompt trace
+Trace: abe4ad2a87575df9fb21c216019787ca
+Metadata: prompt_name=day13-chat, prompt_label=candidate, prompt_version=6,
+prompt_source=langfuse, correlation_id=req-4241f280
+- RETRIEVER retrieve-context | duration=0.0ms | parent=process-chat-request
+- SPAN process-chat-request | duration=494.0ms | parent=root
+- GENERATION generate-response | duration=151.0ms | parent=process-chat-request
+
+Runtime trace from the 10-trace list
+Trace: 20330fe031365635c8c8e71ad4f8d985
+Metadata: prompt_name=day13-chat, prompt_label=production, prompt_version=3,
+prompt_source=langfuse, correlation_id=req-e434eabe
+- RETRIEVER retrieve-context | duration=0.0ms | parent=process-chat-request
+- SPAN process-chat-request | duration=541.0ms | parent=root
+- GENERATION generate-response | duration=153.0ms | parent=process-chat-request
+
+Each waterfall has one root span and child retrieval/generation observations.
