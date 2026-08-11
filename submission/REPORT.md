@@ -5,7 +5,12 @@
 - Tên nhóm: B2-D305-Day13-K3-Observability.
 - Repository URL: https://github.com/vdungx/B2-D305-Day13-K3-Observability
 - Commit SHA cuối: Cập nhật sau khi commit evidence/report cuối.
-- Vai trò: A — API & Middleware; B — Security/PII; C — Metrics & Dashboard; D — SRE & Alerts; E — QA, Chief Investigator & Langfuse.
+- Vai trò: 
+  - Trần Văn Dũng - 2A202601859 - A — API & Middleware
+  - Đàm Lê Minh Quân - 2A202601451 - B — Security/PII 
+  - Nguyễn Viết Huy - 2A202601081 - C — Metrics & Dashboard
+  - Lê Văn Đông - 2A202601851 - D — SRE & Alerts
+  - Đào Đức Mạnh - 2A202601833 - E — QA, Chief Investigator & Langfuse.
 
 ## 2. Kết quả tổng quan
 
