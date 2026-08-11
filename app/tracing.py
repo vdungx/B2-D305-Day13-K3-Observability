@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
 from typing import Any
 
 try:
-    from langfuse import get_client, observe
+    from langfuse import get_client, observe, propagate_attributes
 
     LANGFUSE_SDK_AVAILABLE = True
 except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirements
@@ -20,11 +21,29 @@ except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirement
         def update_current_trace(self, **kwargs: Any) -> None:
             return None
 
+        def update_current_span(self, **kwargs: Any) -> None:
+            return None
+
         def update_current_generation(self, **kwargs: Any) -> None:
+            return None
+
+        @contextmanager
+        def start_as_current_observation(self, **kwargs: Any):
+            yield _DummyObservation()
+
+        def flush(self) -> None:
+            return None
+
+    class _DummyObservation:
+        def update(self, **kwargs: Any) -> None:
             return None
 
     def get_client():
         return _DummyClient()
+
+    @contextmanager
+    def propagate_attributes(**kwargs: Any):
+        yield
 
 
 def get_langfuse_client():
@@ -35,3 +54,9 @@ def tracing_enabled() -> bool:
     return LANGFUSE_SDK_AVAILABLE and bool(
         os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY")
     )
+
+
+def flush_traces() -> None:
+    """Flush queued observations during graceful application shutdown."""
+    if tracing_enabled():
+        get_langfuse_client().flush()

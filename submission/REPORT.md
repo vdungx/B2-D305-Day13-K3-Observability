@@ -9,7 +9,7 @@
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`:
+- Điểm `validate_logs.py`: **30/100 (baseline CP0)** — 126 bản ghi JSON được phân tích; 0 correlation ID hợp lệ; 32 bản ghi thiếu required/enrichment fields; 0 PII leak.
 - Tổng số traces:
 - Số PII leak còn lại:
 - Link/đường dẫn dashboard:

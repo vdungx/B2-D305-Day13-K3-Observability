@@ -1,0 +1,10 @@
+CP0 baseline — python scripts/validate_logs.py
+
+Total log records analyzed: 126
+Records with missing required fields: 32
+Records with missing enrichment (context): 32
+Unique correlation IDs found: 0
+Potential PII leaks detected: 0
+Estimated Score: 30/100
+
+pytest baseline: 23 passed, 4 deprecation warnings.
