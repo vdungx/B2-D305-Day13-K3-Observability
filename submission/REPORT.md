@@ -9,15 +9,17 @@
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`: **30/100 (baseline CP0)** — 126 bản ghi JSON được phân tích; 0 correlation ID hợp lệ; 32 bản ghi thiếu required/enrichment fields; 0 PII leak.
+- Điểm `validate_logs.py`: 
+  - **30/100 (baseline CP0)** — Thiếu correlation ID hợp lệ và enrichment fields.
+  - **100/100 (CP1)** — Đã có Correlation ID (req-*), đủ enrichment fields và lọc PII thành công. Khác biệt cốt lõi là CP1 cho phép nhóm gom nhóm log bằng `correlation_id`, việc dùng `clear_contextvars()` trước mỗi request cũng ngăn ngừa lọt lộ metadata của request cũ qua request mới (thường hay gặp do structlog/FastAPI tái sử dụng worker task).
 - Tổng số traces:
-- Số PII leak còn lại:
+- Số PII leak còn lại: 0
 - Link/đường dẫn dashboard:
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
+- Evidence correlation ID: Xem tại `submission/evidence/cp1_log_sample.json` và `cp1_trace_metadata.md`
+- Evidence PII redaction: Xem tại `submission/evidence/cp1_pii_redacted.json`
 - Evidence trace waterfall:
 - Giải thích một span đáng chú ý:
 
