@@ -38,6 +38,18 @@ class RecordingLangfuseClient:
         self.observations.append(observation)
         yield observation
 
+    @contextmanager
+    def start_as_current_span(self, **kwargs):
+        observation = RecordingObservation(kwargs)
+        self.observations.append(observation)
+        yield observation
+
+    @contextmanager
+    def start_as_current_generation(self, **kwargs):
+        observation = RecordingObservation(kwargs)
+        self.observations.append(observation)
+        yield observation
+
 
 class RecordingObservation:
     def __init__(self, creation: dict) -> None:
@@ -80,9 +92,8 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     }
     assert "env:dev" in trace_update["tags"]
     assert retrieval.creation["name"] == "retrieve-context"
-    assert retrieval.creation["as_type"] == "retriever"
+    assert retrieval.creation["metadata"]["source"] == "mock-corpus"
     assert generation.creation["name"] == "generate-response"
-    assert generation.creation["as_type"] == "generation"
     assert generation.creation["model"] == "claude-sonnet-4-5"
     assert generation.creation["prompt"] is client.prompt
     assert generation.creation["metadata"]["prompt_version"] == "3"

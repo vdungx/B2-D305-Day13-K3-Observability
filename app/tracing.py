@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from typing import Any
 
 try:
-    from langfuse import get_client, observe, propagate_attributes
+    from langfuse import get_client, observe
 
     LANGFUSE_SDK_AVAILABLE = True
 except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirements
@@ -28,7 +28,11 @@ except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirement
             return None
 
         @contextmanager
-        def start_as_current_observation(self, **kwargs: Any):
+        def start_as_current_span(self, **kwargs: Any):
+            yield _DummyObservation()
+
+        @contextmanager
+        def start_as_current_generation(self, **kwargs: Any):
             yield _DummyObservation()
 
         def flush(self) -> None:
@@ -41,13 +45,27 @@ except ImportError:  # pragma: no cover - chỉ dùng khi chưa cài requirement
     def get_client():
         return _DummyClient()
 
-    @contextmanager
-    def propagate_attributes(**kwargs: Any):
-        yield
-
 
 def get_langfuse_client():
     return get_client()
+
+
+@contextmanager
+def propagate_attributes(**attributes: Any):
+    """Apply request-level attributes (user_id/session_id/tags/metadata) to the current trace.
+
+    langfuse 3.2.1 has no top-level propagate_attributes; update_current_trace achieves the
+    same and child observations inherit trace-level attributes. Only touches the trace when
+    one is actually open so unit tests never send stray traces.
+    """
+    try:
+        client = get_client()
+        has_trace_id = getattr(client, "get_current_trace_id", None)
+        if has_trace_id and client.get_current_trace_id() is not None:
+            client.update_current_trace(**attributes)
+    except Exception:
+        pass
+    yield
 
 
 def tracing_enabled() -> bool:

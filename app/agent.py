@@ -27,9 +27,8 @@ def _trace_agent_run(func: F) -> F:
     @wraps(func)
     def wrapper(*args, **kwargs):
         client = get_langfuse_client()
-        with client.start_as_current_observation(
+        with client.start_as_current_span(
             name="process-chat-request",
-            as_type="span",
         ):
             return func(*args, **kwargs)
 
@@ -85,9 +84,8 @@ class LabAgent:
                 metadata=trace_metadata,
             )
 
-            with langfuse_client.start_as_current_observation(
+            with langfuse_client.start_as_current_span(
                 name="retrieve-context",
-                as_type="retriever",
                 input={"query": scrub_text(message)},
                 metadata={"feature": feature, "source": "mock-corpus"},
             ) as retrieval_observation:
@@ -116,9 +114,8 @@ class LabAgent:
                 "prompt_fetch_error": prompt.fetch_error,
             }
 
-            with langfuse_client.start_as_current_observation(
+            with langfuse_client.start_as_current_generation(
                 name="generate-response",
-                as_type="generation",
                 model=self.model,
                 input={"prompt": scrub_text(prompt.text)},
                 metadata=generation_metadata,
