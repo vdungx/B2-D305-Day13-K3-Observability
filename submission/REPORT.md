@@ -46,9 +46,9 @@ Prompt managed `day13-chat` đã có:
 - v5, labels `baseline` và `production`; trace baseline `fa2e3ce889cf8e02fbf88b27e78f3c16` xác nhận label baseline/version 5.
 - v6, label `candidate`; trace candidate `abe4ad2a87575df9fb21c216019787ca` xác nhận label candidate/version 6.
 
-**Khoảng trống còn lại trên UI trước nộp:** chuyển label `production` sang candidate rồi rollback về baseline, đồng thời lưu ảnh before/after label. Không ghi nhận là đã rollback khi chưa có UI evidence. Danh sách traces và hai waterfall đã được lưu.
+Đã thực hiện chuyển label `production` sang candidate và rollback về baseline trên Langfuse UI. Ảnh trạng thái cuối xác nhận prompt `day13-chat`: v6 có `production`/`latest`/`baseline`, còn v5 có `candidate`.
 
-Evidence kỹ thuật: `rerun_cp2_traces.txt`, `dashboard_main.png`, `dashboard_incident.png`, `dashboard_validator.txt`, `langfuse_trace_list.png`, `langfuse_waterfall_cp2.png`.
+Evidence kỹ thuật: `rerun_cp2_traces.txt`, `dashboard_main.png`, `dashboard_incident.png`, `dashboard_validator.txt`, `langfuse_trace_list.png`, `langfuse_waterfall_cp2.png`, `langfuse_prompt.png`.
 
 ## 5. CP3 — Điều tra official challenge
 
@@ -83,7 +83,7 @@ Evidence: `rerun_cp3_investigation.txt`, `langfuse_waterfall_cp3.png`.
 - [x] `pytest` pass 29 tests.
 - [x] Có correlation ID, PII redaction, trace audit và investigation CP3.
 - [x] Chụp danh sách ≥10 traces và waterfall trên Langfuse UI.
-- [ ] Chụp prompt v5/v6 và thao tác production → candidate → baseline trên UI.
+- [x] Chụp prompt v5/v6 và thao tác production → candidate → baseline trên UI.
 - [x] Dựng dashboard runtime và lưu bộ screenshot đủ sáu panel.
 - [ ] Điền commit/PR của B–E và final SHA trước nộp.
 - [ ] Kiểm tra `git status --short` không có `.env`, cache, `.venv` hoặc PII raw.
