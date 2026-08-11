@@ -1,0 +1,31 @@
+CP3 rerun — K3 official challenge
+
+Challenge
+- challenge_id: day13-k3-observability-v1
+- incident: rag_slow
+- affected feature: refund
+- latency threshold: 2000 ms
+
+Metrics for five official challenge requests
+- error_rate_pct: 0.0
+- latency_p50: 2652 ms
+- latency_p95: 3093 ms
+- latency_p99: 3093 ms
+
+Representative request and trace-to-log mapping
+- session_id: k3-cp3-final-incident-20260811
+- correlation_id: req-51ed77cc
+- response latency: 2652 ms
+- trace_id: 1eed0ec2e064e737fa7bb64d07f397ad
+- process-chat-request: 2653 ms
+- retrieve-context (RETRIEVER): 2501 ms
+- generate-response (GENERATION): 151 ms
+- matching logs: request_received and response_sent, feature=refund,
+  response latency_ms=2652
+- trace audit: valid; no PII leaks; model and usage present
+
+Conclusion
+When rag_slow is enabled, retrieval adds roughly 2.5 seconds. Metrics establish the
+user-visible latency symptom, the trace localizes it to retrieve-context, and logs with
+the same correlation ID prove the affected request. The incident was disabled after
+evidence collection and /health confirmed rag_slow=false.

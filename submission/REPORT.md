@@ -1,93 +1,89 @@
-# Báo cáo Day 13 Observability
+# Báo cáo Day 13 — AI Observability
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm: B2-D305-Day13-K3-Observability
+- Tên nhóm: B2-D305-Day13-K3-Observability.
 - Repository URL: https://github.com/vdungx/B2-D305-Day13-K3-Observability
-- Commit SHA cuối: Cập nhật trước khi nộp.
-- Thành viên và vai trò:
-  - Trần Văn Dũng - 2A202601859 - A — API & Middleware.
-  - B — Security Engineer / PII scrubbing.
-  - C — Metrics & Dashboard.
-  - D — SRE & Alerts Engineer.
-  - E — QA, Chief Investigator & Langfuse.
+- Commit SHA cuối: Cập nhật sau khi commit evidence/report cuối.
+- Vai trò: A — API & Middleware; B — Security/PII; C — Metrics & Dashboard; D — SRE & Alerts; E — QA, Chief Investigator & Langfuse.
 
-## 2. Kết quả kỹ thuật
+## 2. Kết quả tổng quan
 
-- Baseline CP0: `30/100`, 126 records, 0 correlation ID hợp lệ, 32 records thiếu required/enrichment fields, 0 PII leak.
-- Kết quả CP1: `100/100`, 20 records, 10 correlation IDs, 0 records thiếu required/enrichment fields, 0 PII leak.
-- Test suite gần nhất: `29 passed`.
-- PII leak còn lại trong log CP1: `0`.
-- Dashboard contract: `6/6 panel` hợp lệ. Chưa có screenshot/runtime dashboard trong evidence.
-- Số liệu runtime CP1 từ `data/logs.jsonl`:
-  - Requests/responses: `10/10`, errors: `0`.
-  - Latency: P50 `152 ms`, P95 khoảng `492.25 ms`, P99 khoảng `713.65 ms`.
-  - Cost: `0.017145 USD`.
-  - Tokens: `330 input`, `1077 output`.
-  - Quality proxy trung bình: `0.88`.
+**Hệ thống đã đạt baseline observability kỹ thuật:** log validator `100/100`, dashboard contract `6/6` và pytest `29 passed`. Sau CP1, log không còn PII raw, có correlation ID và request context đầy đủ. CP2 đã tạo/audit trace Langfuse, dashboard runtime và SLO/alert; CP3 đã tái hiện và điều tra incident `rag_slow` bằng chuỗi Metrics → Traces → Logs.
 
-Evidence: `submission/evidence/baseline_validate_logs.txt`, `submission/evidence/cp1_validate_logs.txt`, `submission/evidence/cp1_pytest.txt`, `submission/evidence/cp1_validate_dashboard.txt`.
+| Hạng mục | Kết quả đã xác minh | Evidence |
+|---|---:|---|
+| CP0 baseline logs | 30/100 | `baseline_validate_logs.txt` |
+| CP1 logs sạch | 100/100; 115 records, 41 CID, 0 PII leak | `rerun_final_checks.txt` |
+| Test suite | 29 passed | `rerun_final_checks.txt` |
+| Dashboard contract | 6/6 panel | `rerun_final_checks.txt` |
+| CP2 trace audit | Hợp lệ; PII/model/usage đầy đủ | `rerun_cp2_traces.txt` |
+| CP3 latency P95 | 3093 ms, vượt 2000 ms | `rerun_cp3_investigation.txt` |
 
-## 3. Logging và tracing
+## 3. CP0–CP1 — Logging an toàn và truy vết request
 
-- Evidence correlation ID và log enrichment: `submission/evidence/cp1_log_samples.jsonl` và `submission/evidence/cp1_log_sample.json`.
-- Correlation ID mẫu `req-e1f076d6` xuất hiện nhất quán ở `request_received` và `response_sent`.
-- Metadata API gồm `user_id_hash`, `session_id`, `feature`, `model`, `env`.
-- Evidence PII redaction: `submission/evidence/cp1_pii_redacted.json`; email được thay bằng `[REDACTED_EMAIL]`, số điện thoại bằng `[REDACTED_PHONE_VN]`.
-- `clear_contextvars()` được gọi đầu mỗi request để context của structlog từ request trước không bị tái sử dụng, tránh sai correlation và rò rỉ metadata.
-- Trace CP3 đã audit: `d8220b4404bba7690b4285c85364ed5a`, có `process-chat-request`, `retrieve-context` (RETRIEVER) và `generate-response` (GENERATION); model/usage có mặt, không phát hiện PII leak.
-- Evidence trace export/an toàn: `submission/evidence/cp3_incident_investigation.txt`. Cần bổ sung screenshot trace waterfall từ Langfuse UI trước khi nộp.
+Baseline CP0 có JSON logs nhưng không đủ context để nối các sự kiện theo request. Kết quả rerun hiện tại là 115 log records hợp lệ, không thiếu required/enrichment fields, có 41 correlation IDs và không phát hiện PII raw.
 
-## 4. Prompt versioning
+- Middleware gọi `clear_contextvars()` ở đầu request để context structlog của request cũ không thể rò sang request mới.
+- `x-request-id` được giữ xuyên response, log và trace; `x-response-time-ms` hỗ trợ đo latency phía API.
+- `request_received` có `user_id_hash`, `session_id`, `feature`, `model`, `env`; email/điện thoại được redact trước JSON render.
+- Ví dụ evidence correlation/redaction: `cp1_log_samples.jsonl`, `cp1_log_sample.json`, `cp1_pii_redacted.json`.
 
-- Prompt name theo contract: `day13-chat`.
-- Version/label baseline: Chưa có evidence Langfuse trong repository.
-- Version/label candidate: Chưa có evidence Langfuse trong repository.
-- Trace ID của mỗi version: Chưa có.
-- Bằng chứng đổi label hoặc rollback: Chưa có.
-- Trạng thái: cần tạo prompt v1/v2, gắn label và chụp evidence thật trên Langfuse trước khi nộp.
+## 4. CP2 — Metrics, dashboard, traces và alert
 
-## 5. Dashboard, SLO và alerts
+### Runtime metrics và dashboard
 
-- Kết quả `validate_dashboard.py`: `HỢP LỆ: 6/6 panel có trong dashboard contract.`
-- Evidence dashboard contract: `submission/evidence/cp1_validate_dashboard.txt`.
-- Sáu nhóm panel: latency, traffic, errors, cost, tokens và quality; nguồn dữ liệu chuẩn là `data/logs.jsonl`.
-- SLO hiện tại trong `config/slo.yaml`:
-  - Latency P95 ≤ `3000 ms`, target `99.5%`.
-  - Error rate ≤ `2%`, target `99.0%`.
-  - Daily cost ≤ `2.5 USD`, target `100%`.
-  - Quality score trung bình ≥ `0.75`, target `95%`.
-- Alert rules đã có trong `config/alert_rules.yaml`: `HighErrorRate`, `HighLatency`, `LowQualityScore`, đều symptom-based.
-- Alert runbook `docs/alerts.md` vẫn là template; cần hoàn thiện ba mục và bổ sung screenshot dashboard runtime trước khi nộp.
+Batch 10 request sạch sau CP1 cho P50 `151 ms`, P95 `541 ms`, error rate `0%`, tổng cost `$0.0241`, 330 input tokens, 1542 output tokens và quality `0.88`. Dashboard dùng nguồn chuẩn `data/logs.jsonl` và có sáu nhóm: latency, traffic, error, cost, tokens, quality. Contract validator xác nhận 6/6 panel; ảnh runtime hiện có tại `submission/evidence/dashboard_main.png`.
 
-## 6. Điều tra challenge
+SLO hiện tại: P95 latency ≤3000 ms, error rate ≤2%, daily cost ≤$2.50 và quality ≥0.75. Ba alert symptom-based (`high_latency_p95`, `elevated_error_rate`, `cost_budget_exceeded`) và runbook Metrics → Traces → Logs đã hoàn thiện tại `config/alert_rules.yaml` và `docs/alerts.md`.
 
-- Challenge ID: `day13-k3-observability-v1` (K3); incident `rag_slow`; feature ảnh hưởng `refund`; latency threshold `2000 ms`.
-- Triệu chứng từ metrics: 5 request challenge thành công, `error_rate_pct=0.0`; latency P50=`2652 ms`, P95/P99=`3227 ms`, vượt ngưỡng `2000 ms`.
-- Trace ID liên quan: `d8220b4404bba7690b4285c85364ed5a`. Tổng `process-chat-request`=`2657 ms`; `retrieve-context`=`2506 ms`; `generate-response`=`151 ms`.
-- Log line/correlation ID liên quan: `req-cb44b739`; `request_received` và `response_sent` đều feature `refund`, với `latency_ms=2652`.
-- Root cause: Khi `rag_slow` bật, `mock_rag.retrieve` thêm delay 2.5 giây. Metrics, waterfall trace và logs cùng correlation ID xác nhận retrieval là điểm nghẽn.
-- Mitigation: Tắt `rag_slow` sau khi thu evidence; `/health` xác nhận incident đã về `false`.
-- Fix action: Thêm latency budget/timeout và cache hoặc tối ưu retrieval; kiểm chứng lại P95 của feature `refund` sau fix.
-- Preventive measure: Duy trì SLO P95 latency, alert symptom-based và theo dõi duration `retrieve-context` trong Langfuse.
-- Evidence: `submission/evidence/cp3_incident_investigation.txt`; cần bổ sung screenshot metrics và waterfall UI trước khi nộp.
+### Langfuse và prompt versioning
 
-## 7. Đóng góp cá nhân
+Trace `20330fe031365635c8c8e71ad4f8d985` audit hợp lệ: hierarchy gồm `process-chat-request`, `retrieve-context` kiểu RETRIEVER và `generate-response` kiểu GENERATION; model, usage và PII scrubbing đều đạt.
 
-| Thành viên/vai trò | Phần việc | Commit/PR | Điều đã học |
-|---|---|---|---|
-| A — API & Middleware | Correlation ID middleware, request/response headers, request context enrichment, CID liên kết trace/log CP3 | `a8ad3e0`, `89c4254` | Liên kết metadata xuyên suốt vòng đời request và điều tra bằng CID. |
-| B — Security Engineer | PII scrubbing và kiểm tra email/điện thoại/thẻ | Cập nhật sau | Redact trước khi render JSON và ghi file. |
-| C — Metrics & Dashboard | Error rate, dashboard fields và dashboard contract | Cập nhật sau | Chọn metric và threshold phục vụ điều tra. |
-| D — SRE & Alerts | SLI/SLO, alert mapping và runbook | Cập nhật sau | Chuyển symptom thành condition, severity và runbook. |
-| E — QA, Chief Investigator & Langfuse | Load test, validator, trace audit và evidence CP3 | Cập nhật sau | Xác minh Metrics → Traces → Logs bằng evidence cụ thể. |
+Prompt managed `day13-chat` đã có:
 
-## 8. Checklist còn thiếu trước khi nộp
+- v5, labels `baseline` và `production`; trace baseline `fa2e3ce889cf8e02fbf88b27e78f3c16` xác nhận label baseline/version 5.
+- v6, label `candidate`; trace candidate `abe4ad2a87575df9fb21c216019787ca` xác nhận label candidate/version 6.
 
-- [ ] Điền tên nhóm, repository URL và commit SHA cuối.
-- [ ] Chụp danh sách ≥10 Langfuse traces và waterfall UI.
-- [ ] Tạo prompt v1/v2, label baseline/candidate/production và evidence rollback.
-- [ ] Dựng dashboard runtime, chụp screenshot đủ 6 nhóm panel.
-- [ ] Hoàn thiện ba runbook trong `docs/alerts.md`.
-- [ ] Cập nhật commit/PR thực tế của từng thành viên.
-- [ ] Chạy test/validator cuối và kiểm tra không có secret hoặc PII trong Git.
+**Khoảng trống cần xử lý trên UI trước nộp:** chuyển label `production` sang candidate, rollback về baseline và lưu ảnh prompt list, hai waterfall cùng ảnh before/after label. Không ghi nhận là đã rollback khi chưa có UI evidence.
+
+Evidence kỹ thuật: `rerun_cp2_traces.txt`, `dashboard_main.png`, `dashboard_validator.txt`.
+
+## 5. CP3 — Điều tra official challenge
+
+Challenge K3 là `day13-k3-observability-v1`: incident `rag_slow`, ảnh hưởng feature `refund`, ngưỡng latency 2000 ms.
+
+**Triệu chứng:** năm request official đều thành công (`error_rate=0%`) nhưng latency P50 là 2652 ms, P95/P99 là 3093 ms — vượt SLO/threshold.
+
+**Khoanh vùng:** trace `1eed0ec2e064e737fa7bb64d07f397ad` của request CID `req-51ed77cc` có tổng duration 2653 ms. Trong waterfall, `retrieve-context` chiếm 2501 ms, trong khi `generate-response` chỉ 151 ms.
+
+**Chứng minh và hành động:** logs `request_received`/`response_sent` cùng CID ghi feature refund và latency 2652 ms. Khi `rag_slow` bật, `mock_rag.retrieve` thêm delay khoảng 2.5 giây; do đó retrieval là root cause. Incident đã được tắt sau khi thu evidence và `/health` xác nhận `rag_slow=false`.
+
+- Mitigation: tắt incident/fallback retrieval bất thường.
+- Fix: thêm timeout/latency budget, cache hoặc tối ưu retriever; xác minh lại P95 của refund sau fix.
+- Prevention: giữ alert P95 symptom-based và theo dõi duration `retrieve-context` trong Langfuse.
+
+Evidence: `rerun_cp3_investigation.txt`.
+
+## 6. Đóng góp cá nhân
+
+| Thành viên/vai trò | Phần việc | Commit/PR cần gắn trước nộp |
+|---|---|---|
+| A — API & Middleware | Correlation ID, request context, error headers, trace-to-log mapping | `a8ad3e0`, `89c4254`, `76dd973` |
+| B — Security Engineer | PII regex/scrubbing và audit evidence | Cập nhật theo commit B |
+| C — Metrics & Dashboard | Error rate, dashboard contract/runtime | Cập nhật theo commit C |
+| D — SRE & Alerts | SLO, alert rules, runbooks | Cập nhật theo commit D |
+| E — QA/Investigator/Langfuse | Load test, trace/prompt audit, challenge evidence | Cập nhật theo commit E |
+
+## 7. Checklist trước khi nộp
+
+- [x] `validate_logs.py` đạt 100/100.
+- [x] `validate_dashboard.py` hợp lệ 6/6.
+- [x] `pytest` pass 29 tests.
+- [x] Có correlation ID, PII redaction, trace audit và investigation CP3.
+- [ ] Chụp danh sách ≥10 traces và waterfall trên Langfuse UI.
+- [ ] Chụp prompt v5/v6 và thao tác production → candidate → baseline trên UI.
+- [ ] Bổ sung ảnh dashboard thấy đủ sáu panel nếu ảnh hiện tại chưa bao quát toàn bộ.
+- [ ] Điền commit/PR của B–E và final SHA trước nộp.
+- [ ] Kiểm tra `git status --short` không có `.env`, cache, `.venv` hoặc PII raw.

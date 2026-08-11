@@ -50,6 +50,20 @@ def main() -> int:
         return 1
 
     trace = max(traces, key=lambda item: item.timestamp)
+    trace_metadata = getattr(trace, "metadata", None)
+    if not isinstance(trace_metadata, dict):
+        trace_metadata = {}
+    trace_metadata_allowlist = {
+        key: trace_metadata[key]
+        for key in (
+            "correlation_id",
+            "prompt_name",
+            "prompt_label",
+            "prompt_version",
+            "prompt_source",
+        )
+        if key in trace_metadata
+    }
     observations = client.api.observations.get_many(
         trace_id=trace.id,
         limit=50,
@@ -89,6 +103,7 @@ def main() -> int:
 
     print(f"Trace ID: {trace.id}")
     print(f"Trace name: {trace.name}")
+    print(f"Trace metadata: {trace_metadata_allowlist or 'none'}")
     print(f"Observations: {len(observations)}")
     for item in sorted(observations, key=lambda value: value.start_time):
         parent = item.parent_observation_id or "root"

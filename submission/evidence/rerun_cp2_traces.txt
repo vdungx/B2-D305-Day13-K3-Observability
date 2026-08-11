@@ -1,0 +1,27 @@
+CP2 rerun — Langfuse trace and prompt evidence
+
+Baseline runtime batch
+- 10 successful requests sent to /chat after creating clean CP1 logs.
+- Runtime snapshot: traffic=10, error_rate_pct=0.0, latency_p50=151 ms,
+  latency_p95=541 ms, avg_cost_usd=0.0024, total_cost_usd=0.0241,
+  tokens_in_total=330, tokens_out_total=1542, quality_avg=0.88.
+
+Trace audit
+- Trace ID: 20330fe031365635c8c8e71ad4f8d985
+- Session: s01
+- Metadata: correlation ID present; prompt source=langfuse.
+- Waterfall: process-chat-request > retrieve-context (RETRIEVER),
+  generate-response (GENERATION).
+- Audit: valid; PII leaks none; generation model and usage present.
+
+Prompt versioning
+- day13-chat v5: labels baseline and production.
+- Baseline trace: fa2e3ce889cf8e02fbf88b27e78f3c16
+  metadata: prompt_label=baseline, prompt_version=5, prompt_source=langfuse.
+- day13-chat v6: label candidate.
+- Candidate trace: abe4ad2a87575df9fb21c216019787ca
+  metadata: prompt_label=candidate, prompt_version=6, prompt_source=langfuse.
+
+Remaining UI evidence
+- Move production to candidate and roll it back to baseline in Langfuse UI.
+- Capture the prompt-version list, two trace waterfalls, and before/after label screenshots.
