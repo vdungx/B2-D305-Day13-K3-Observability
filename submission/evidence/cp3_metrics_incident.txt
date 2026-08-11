@@ -1,0 +1,11 @@
+﻿{
+    "traffic":  6,
+    "error_rate_pct":  0.0,
+    "latency_p50":  2653.0,
+    "latency_p95":  2653.0,
+    "latency_p99":  2653.0,
+    "total_cost_usd":  0.0114,
+    "error_breakdown":  {
+
+                        }
+}
