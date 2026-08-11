@@ -1,19 +1,19 @@
 alerts:
-  - name: HighErrorRate
+  - name: high_latency_p95
+    severity: warning
+    condition: latency_p95 > 3000ms for 5 minutes
+    type: symptom-based
+    owner: SRE Team
+    runbook: docs/alerts.md#high_latency_p95
+  - name: elevated_error_rate
     severity: critical
-    condition: error_rate_pct > 5
+    condition: error_rate_pct > 5 for 3 minutes
     type: symptom-based
     owner: SRE Team
-    runbook: docs/alerts.md#high-error-rate
-  - name: HighLatency
+    runbook: docs/alerts.md#elevated_error_rate
+  - name: cost_budget_exceeded
     severity: warning
-    condition: latency_p95_ms > 4000
+    condition: daily_cost_usd > 2.5
     type: symptom-based
     owner: SRE Team
-    runbook: docs/alerts.md#high-latency
-  - name: LowQualityScore
-    severity: warning
-    condition: quality_score_avg < 0.6
-    type: symptom-based
-    owner: AI Engineer
-    runbook: docs/alerts.md#low-quality-score
+    runbook: docs/alerts.md#cost_budget_exceeded
