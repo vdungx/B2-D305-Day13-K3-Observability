@@ -117,9 +117,16 @@ def main() -> int:
     print(f"Generation model present: {generation_has_model}")
     print(f"Generation usage present: {generation_has_usage}")
 
+    retrieval_present = any(
+        getattr(item, "name", None) == "retrieve-context"
+        and _type_name(item) in {"SPAN", "RETRIEVER"}
+        for item in observations
+    )
     valid = (
         len(roots) == 1
-        and {"SPAN", "RETRIEVER", "GENERATION"}.issubset(types)
+        and "SPAN" in types
+        and retrieval_present
+        and "GENERATION" in types
         and children_nested_under_root
         and bool(generations)
         and generation_has_model

@@ -70,11 +70,11 @@ Evidence: `rerun_cp3_investigation.txt`.
 
 | Thành viên/vai trò | Phần việc | Commit/PR cần gắn trước nộp |
 |---|---|---|
-| A — API & Middleware | Correlation ID, request context, error headers, trace-to-log mapping | `a8ad3e0`, `89c4254`, `76dd973` |
-| B — Security Engineer | PII regex/scrubbing và audit evidence | Cập nhật theo commit B |
-| C — Metrics & Dashboard | Error rate, dashboard contract/runtime | Cập nhật theo commit C |
-| D — SRE & Alerts | SLO, alert rules, runbooks | Cập nhật theo commit D |
-| E — QA/Investigator/Langfuse | Load test, trace/prompt audit, challenge evidence | Cập nhật theo commit E |
+| A — API & Middleware | Correlation ID, request context, error headers, trace-to-log mapping | `a8ad3e0`, `89c4254`, `76dd973` — chưa có PR |
+| B — Security Engineer | PII regex/scrubbing và audit evidence | `7a57bfb` — chưa có PR |
+| C — Metrics & Dashboard | Error rate, dashboard contract/runtime | `ded378b`, `d6dfc5f` — chưa có PR |
+| D — SRE & Alerts | SLO, alert rules, runbooks | `411683e`, `76a8096` — chưa có PR |
+| E — QA/Investigator/Langfuse | Load test, trace/prompt audit, challenge evidence | `a0d57bc` — chưa có PR |
 
 ## 7. Checklist trước khi nộp
 

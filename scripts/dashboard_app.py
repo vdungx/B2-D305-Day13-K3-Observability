@@ -10,6 +10,11 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import sys
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import altair as alt
 import pandas as pd
@@ -19,8 +24,6 @@ import yaml
 from app.cli import configure_utf8_stdio
 
 configure_utf8_stdio()
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 
 _log_path = os.getenv("LOG_PATH", "data/logs.jsonl")
 LOG_PATH = Path(_log_path) if Path(_log_path).is_absolute() else REPO_ROOT / _log_path

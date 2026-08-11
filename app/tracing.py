@@ -51,6 +51,21 @@ def get_langfuse_client():
 
 
 @contextmanager
+def start_as_current_observation(client: Any, **kwargs: Any):
+    """Keep retriever observations compatible with Langfuse SDK versions."""
+    if hasattr(client, "start_as_current_observation"):
+        with client.start_as_current_observation(**kwargs) as observation:
+            yield observation
+        return
+
+    # Langfuse SDK 3 represents a retriever as a named span; remove the
+    # legacy ``as_type`` argument while preserving name, input and metadata.
+    kwargs.pop("as_type", None)
+    with client.start_as_current_span(**kwargs) as observation:
+        yield observation
+
+
+@contextmanager
 def propagate_attributes(**attributes: Any):
     """Apply request-level attributes (user_id/session_id/tags/metadata) to the current trace.
 

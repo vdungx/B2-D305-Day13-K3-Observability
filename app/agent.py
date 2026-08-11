@@ -14,6 +14,7 @@ from .prompt_management import resolve_prompt
 from .tracing import (
     get_langfuse_client,
     propagate_attributes,
+    start_as_current_observation,
     tracing_enabled,
 )
 
@@ -84,7 +85,8 @@ class LabAgent:
                 metadata=trace_metadata,
             )
 
-            with langfuse_client.start_as_current_observation(
+            with start_as_current_observation(
+                langfuse_client,
                 name="retrieve-context",
                 as_type="retriever",
                 input={"query": scrub_text(message)},
