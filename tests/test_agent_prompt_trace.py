@@ -92,6 +92,7 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     }
     assert "env:dev" in trace_update["tags"]
     assert retrieval.creation["name"] == "retrieve-context"
+    assert retrieval.creation["as_type"] == "retriever"
     assert retrieval.creation["metadata"]["source"] == "mock-corpus"
     assert generation.creation["name"] == "generate-response"
     assert generation.creation["model"] == "claude-sonnet-4-5"
