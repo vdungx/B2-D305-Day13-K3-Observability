@@ -14,6 +14,7 @@
 
 ## 2. Kết quả kỹ thuật
 
+<<<<<<< HEAD
 - Baseline CP0: `30/100`, 126 records, 0 correlation ID hợp lệ, 32 records thiếu required/enrichment fields, 0 PII leak.
 - Kết quả CP1: `100/100`, 20 records, 10 correlation IDs, 0 records thiếu required fields, 0 records thiếu enrichment, 0 PII leak.
 - Test suite CP1: `28 passed`.
@@ -37,6 +38,21 @@ Evidence: `submission/evidence/baseline_validate_logs.txt`, `submission/evidence
 - Evidence PII redaction: email được thay bằng `[REDACTED_EMAIL]`, số điện thoại bằng `[REDACTED_PHONE_VN]`; validator phát hiện 0 PII leak.
 - Evidence trace waterfall: Chưa có trong repo; cần bổ sung screenshot/export từ Langfuse.
 - Span đáng chú ý từ log: request `req-e1f076d6` có response latency `769 ms`, cao hơn phần lớn response `152–154 ms`; đây là tín hiệu cần mở trace tương ứng để điều tra sâu hơn, chưa đủ để kết luận root cause.
+=======
+- Điểm `validate_logs.py`: 
+  - **30/100 (baseline CP0)** — Thiếu correlation ID hợp lệ và enrichment fields.
+  - **100/100 (CP1)** — Đã có Correlation ID (req-*), đủ enrichment fields và lọc PII thành công. Khác biệt cốt lõi là CP1 cho phép nhóm gom nhóm log bằng `correlation_id`, việc dùng `clear_contextvars()` trước mỗi request cũng ngăn ngừa lọt lộ metadata của request cũ qua request mới (thường hay gặp do structlog/FastAPI tái sử dụng worker task).
+- Tổng số traces:
+- Số PII leak còn lại: 0
+- Link/đường dẫn dashboard:
+
+## 3. Logging và tracing
+
+- Evidence correlation ID: Xem tại `submission/evidence/cp1_log_sample.json` và `cp1_trace_metadata.md`
+- Evidence PII redaction: Xem tại `submission/evidence/cp1_pii_redacted.json`
+- Evidence trace waterfall:
+- Giải thích một span đáng chú ý:
+>>>>>>> 83f8358267389a03f83107dbdf74764953036f58
 
 ## 4. Prompt versioning
 
