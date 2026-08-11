@@ -84,8 +84,9 @@ class LabAgent:
                 metadata=trace_metadata,
             )
 
-            with langfuse_client.start_as_current_span(
+            with langfuse_client.start_as_current_observation(
                 name="retrieve-context",
+                as_type="retriever",
                 input={"query": scrub_text(message)},
                 metadata={"feature": feature, "source": "mock-corpus"},
             ) as retrieval_observation:

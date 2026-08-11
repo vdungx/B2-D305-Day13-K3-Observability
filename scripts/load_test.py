@@ -23,7 +23,9 @@ def send_request(client: httpx.Client, payload: dict) -> None:
         start = time.perf_counter()
         r = client.post(f"{BASE_URL}/chat", json=payload)
         latency = (time.perf_counter() - start) * 1000
-        print(f"[{r.status_code}] {r.json().get('correlation_id')} | {payload['feature']} | {latency:.1f}ms")
+        body = r.json()
+        correlation_id = r.headers.get("x-request-id") or body.get("correlation_id", "None")
+        print(f"[{r.status_code}] {correlation_id} | {payload['feature']} | {latency:.1f}ms")
     except Exception as e:
         print(f"Error: {e}")
 
