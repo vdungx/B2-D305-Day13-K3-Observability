@@ -4,7 +4,7 @@
 
 - Tên nhóm: `B2-D305`
 - Repository URL: [B2-D305-Day13-K3-Observability](https://github.com/vdungx/B2-D305-Day13-K3-Observability)
-- Commit SHA cuối: [`b411776`](https://github.com/vdungx/B2-D305-Day13-K3-Observability/commit/b411776) (HEAD hiện tại; cập nhật lại sau commit report cuối).
+- Commit SHA cuối: [`9bbe562`](https://github.com/vdungx/B2-D305-Day13-K3-Observability/commit/e406d0b) (HEAD hiện tại; cập nhật lại sau commit report cuối).
 - Thành viên và vai trò:
   - Trần Văn Dũng — `2A202601859` — A: API & Middleware
   - Đàm Lê Minh Quân — `2A202601451` — B: Security/PII
