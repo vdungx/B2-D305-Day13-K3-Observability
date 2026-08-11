@@ -1,0 +1,42 @@
+CP3 — Challenge investigation evidence (K3)
+
+Challenge ID: day13-k3-observability-v1
+Incident: rag_slow
+Affected feature: refund
+Latency threshold: 2000 ms
+
+Metrics after five official challenge requests:
+- traffic: 5
+- error_rate_pct: 0.0
+- latency_p50: 2652 ms
+- latency_p95: 3227 ms
+- latency_p99: 3227 ms
+
+Representative request:
+- session_id: k3-challenge-s03-final
+- correlation_id: req-cb44b739
+- response latency: 2652 ms
+
+Trace evidence:
+- trace_id: d8220b4404bba7690b4285c85364ed5a
+- trace_name: chat-response
+- process-chat-request: 2657.0 ms
+- retrieve-context (RETRIEVER): 2506.0 ms
+- generate-response (GENERATION): 151.0 ms
+- trace audit: HỢP LỆ; no PII leaks; model and usage present
+
+Log evidence for req-cb44b739:
+- request_received: feature=refund
+- response_sent: feature=refund, latency_ms=2652
+
+Conclusion:
+The latency symptom is localized to retrieve-context. When incident rag_slow is enabled,
+mock_rag.retrieve adds a 2.5-second delay; the trace duration and matching correlation-ID
+log prove this is the root cause for the affected refund requests.
+
+Mitigation:
+Disabled rag_slow after evidence collection. The health endpoint confirmed rag_slow=false.
+
+Follow-up:
+Add a latency budget/timeout and cache or optimize retrieval; alert on retrieval latency
+and preserve the P95 latency SLO to detect recurrence.

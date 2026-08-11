@@ -1,0 +1,4 @@
+CP1 integration verification — 2026-08-11
+Command: python scripts/validate_dashboard.py
+
+HỢP LỆ: 6/6 panel có trong dashboard contract.

@@ -1,0 +1,5 @@
+CP1 integration verification — 2026-08-11
+Command: python -m pytest -q
+
+28 passed, 6 warnings.
+The warnings are FastAPI deprecation warnings and pytest cache permission warnings; no test failed.
