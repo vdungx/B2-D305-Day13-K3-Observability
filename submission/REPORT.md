@@ -16,7 +16,7 @@
 
 - Baseline CP0: `30/100`, 126 records, 0 correlation ID hợp lệ, 32 records thiếu required/enrichment fields, 0 PII leak.
 - Kết quả CP1: `100/100`, 20 records, 10 correlation IDs, 0 records thiếu required/enrichment fields, 0 PII leak.
-- Test suite gần nhất: `28 passed`.
+- Test suite gần nhất: `29 passed`.
 - PII leak còn lại trong log CP1: `0`.
 - Dashboard contract: `6/6 panel` hợp lệ. Chưa có screenshot/runtime dashboard trong evidence.
 - Số liệu runtime CP1 từ `data/logs.jsonl`:
@@ -76,7 +76,7 @@ Evidence: `submission/evidence/baseline_validate_logs.txt`, `submission/evidence
 
 | Thành viên/vai trò | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| A — API & Middleware | Correlation ID middleware, request/response headers, request context enrichment, CID liên kết trace/log CP3 | `a8ad3e0` | Liên kết metadata xuyên suốt vòng đời request và điều tra bằng CID. |
+| A — API & Middleware | Correlation ID middleware, request/response headers, request context enrichment, CID liên kết trace/log CP3 | `a8ad3e0`, `89c4254` | Liên kết metadata xuyên suốt vòng đời request và điều tra bằng CID. |
 | B — Security Engineer | PII scrubbing và kiểm tra email/điện thoại/thẻ | Cập nhật sau | Redact trước khi render JSON và ghi file. |
 | C — Metrics & Dashboard | Error rate, dashboard fields và dashboard contract | Cập nhật sau | Chọn metric và threshold phục vụ điều tra. |
 | D — SRE & Alerts | SLI/SLO, alert mapping và runbook | Cập nhật sau | Chuyển symptom thành condition, severity và runbook. |
